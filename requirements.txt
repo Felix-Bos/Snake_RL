@@ -1,0 +1,9 @@
+gymnasium>=0.29.1
+numpy>=1.26.0
+pygame-ce>=2.5.0
+torch>=2.2.0
+tensorboard>=2.16.0
+tqdm>=4.66.0
+django>=5.2.0
+channels>=4.3.0
+uvicorn[standard]>=0.30.0

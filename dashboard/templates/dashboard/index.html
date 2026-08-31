@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake RL Dashboard</title>
+  <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <h1>🐍 Snake <span>RL Dashboard</span></h1>
+    <div id="status-pill" data-status="idle">idle</div>
+  </header>
+
+  <main>
+    <div class="left-col">
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="train">Entraîner</button>
+          <button class="tab-btn" data-tab="watch">Regarder</button>
+          <button class="tab-btn" data-tab="obstacles">Obstacles</button>
+        </div>
+
+        <div id="error-banner" class="error-banner"></div>
+
+        <!-- TRAIN TAB -->
+        <div class="tab-panel active" id="tab-train">
+          <div class="field">
+            <label for="cfg-run-name">Nom du run (optionnel)</label>
+            <input type="text" id="cfg-run-name" placeholder="ex: essai_1" maxlength="40">
+            <p class="hint">Si renseigné, les checkpoints seront sauvegardés sous
+              <code>{nom}_best_model</code>, <code>{nom}_final_model</code> et
+              <code>{nom}_interrupted_model</code> au lieu d'écraser les fichiers génériques.
+              Lettres, chiffres, tirets et underscores uniquement.</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cfg-algo">Algorithme</label>
+              <select id="cfg-algo">
+                <option value="DQN">DQN</option>
+                <option value="DDQN">DDQN</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cfg-obs">Observation</label>
+              <select id="cfg-obs">
+                <option value="vector">Vector</option>
+                <option value="image">Image</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cfg-episodes">Épisodes</label>
+              <input type="number" id="cfg-episodes" value="1000" min="1">
+            </div>
+            <div class="field">
+              <label for="cfg-max-steps">Max steps / épisode</label>
+              <input type="number" id="cfg-max-steps" value="500" min="1">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cfg-batch-size">Batch size</label>
+              <input type="number" id="cfg-batch-size" value="32" min="1">
+            </div>
+            <div class="field">
+              <label for="cfg-lr">Learning rate</label>
+              <input type="number" id="cfg-lr" value="0.00025" step="0.00001" min="0">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="cfg-obstacles">Nb obstacles (aléatoire)</label>
+              <input type="number" id="cfg-obstacles" value="10" min="0">
+            </div>
+            <div class="field">
+              <label for="cfg-step-penalty">Pénalité / pas</label>
+              <input type="number" id="cfg-step-penalty" value="0.01" step="0.001" min="0">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="cfg-no-food-steps">Max pas sans nourriture (0 = auto)</label>
+            <input type="number" id="cfg-no-food-steps" value="0" min="0">
+          </div>
+
+          <div class="field">
+            <label for="cfg-train-speed">Vitesse d'affichage du jeu</label>
+            <select id="cfg-train-speed">
+              <option value="fast">Rapide (training à pleine vitesse, aperçu saccadé)</option>
+              <option value="slow">Lent (chaque case affichée, training ralenti)</option>
+            </select>
+          </div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="cfg-use-custom-obstacles">
+            Utiliser la carte d'obstacles personnalisée (onglet Obstacles)
+          </label>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="cfg-resume">
+            Reprendre depuis un checkpoint
+          </label>
+
+          <div class="field" id="resume-model-field" style="display:none;">
+            <label for="cfg-resume-model">Checkpoint de reprise</label>
+            <select id="cfg-resume-model"></select>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-start-train">▶ Lancer l'entraînement</button>
+            <button class="btn btn-danger" id="btn-stop" disabled>⏹ Stop</button>
+          </div>
+        </div>
+
+        <!-- WATCH TAB -->
+        <div class="tab-panel" id="tab-watch">
+          <div class="field">
+            <label for="watch-model">Modèle</label>
+            <select id="watch-model"></select>
+          </div>
+          <div class="field">
+            <label for="watch-obs">Type d'observation utilisé à l'entraînement</label>
+            <select id="watch-obs">
+              <option value="vector">Vector</option>
+              <option value="image">Image</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="watch-episodes">Nombre de parties</label>
+            <input type="number" id="watch-episodes" value="5" min="1">
+          </div>
+          <label class="checkbox-field">
+            <input type="checkbox" id="cfg-watch-use-custom-obstacles">
+            Utiliser la carte d'obstacles personnalisée (onglet Obstacles)
+          </label>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-start-watch">▶ Regarder jouer</button>
+            <button class="btn btn-danger" id="btn-stop-watch" disabled>⏹ Stop</button>
+          </div>
+          <p class="hint">Le modèle joue en mode inférence pure (epsilon = 0), sans apprentissage.</p>
+        </div>
+
+        <!-- OBSTACLES TAB -->
+        <div class="tab-panel" id="tab-obstacles">
+          <div id="obstacle-grid"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" id="btn-clear-obstacles">Effacer</button>
+            <button class="btn btn-ghost" id="btn-save-obstacles">Sauvegarder…</button>
+          </div>
+          <div class="layout-row">
+            <select id="saved-layouts-select">
+              <option value="">— Charger une carte —</option>
+            </select>
+            <button class="btn btn-ghost" id="btn-load-layout">Charger</button>
+          </div>
+          <p class="hint">Cliquez sur les cases pour placer/retirer des obstacles. Les cases vertes au centre sont la zone de spawn du serpent et ne peuvent pas recevoir d'obstacle.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="card">
+        <h2>Jeu en direct</h2>
+        <canvas id="game-canvas" width="640" height="480"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Métriques</h2>
+        <div class="stats-strip">
+          <div class="stat"><div class="label">Épisode</div><div class="value" id="stat-episode">–</div></div>
+          <div class="stat"><div class="label">Score</div><div class="value" id="stat-score">–</div></div>
+          <div class="stat"><div class="label">Moy. 50</div><div class="value" id="stat-mean">–</div></div>
+          <div class="stat"><div class="label">Epsilon</div><div class="value" id="stat-epsilon">–</div></div>
+          <div class="stat"><div class="label">Loss</div><div class="value" id="stat-loss">–</div></div>
+          <div class="stat"><div class="label">Buffer</div><div class="value" id="stat-buffer">–</div></div>
+          <div class="stat"><div class="label">Temps</div><div class="value" id="stat-time">–</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Courbes</h2>
+        <div class="game-charts-row">
+          <div class="chart-wrap">
+            <h3>Reward par épisode</h3>
+            <canvas id="chart-reward"></canvas>
+          </div>
+          <div class="chart-wrap">
+            <h3>Loss</h3>
+            <canvas id="chart-loss"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    window.DASHBOARD_DATA = {
+      checkpoints: {{ checkpoints_json|default:"[]"|safe }},
+      savedLayouts: {{ saved_layouts_json|default:"[]"|safe }},
+      cols: 32,
+      rows: 24
+    };
+  </script>
+  <script src="{% static 'dashboard/js/vendor/chart.umd.js' %}"></script>
+  <script src="{% static 'dashboard/js/socket.js' %}"></script>
+  <script src="{% static 'dashboard/js/canvas.js' %}"></script>
+  <script src="{% static 'dashboard/js/charts.js' %}"></script>
+  <script src="{% static 'dashboard/js/obstacle_editor.js' %}"></script>
+  <script src="{% static 'dashboard/js/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Django
+db.sqlite3
+*.sqlite3
+staticfiles/
+
+# RL training artifacts
+checkpoints/
+runs/
+*.pth
+*.pt
+*.onnx
+*.pkl
+*.npy
+*.npz
+obstacle_layouts/*.json
+!obstacle_layouts/.gitkeep
+
+# Tooling / OS
+.DS_Store
+.claude/
+.idea/
+.vscode/
+.coverage
+htmlcov/
+.pytest_cache/
