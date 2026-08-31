@@ -115,18 +115,6 @@ http://127.0.0.1:8000/
 `manage.py runserver` n'est pas recommande pour ce projet, car le dashboard
 utilise des WebSockets via Django Channels. Utilisez `uvicorn`.
 
-## Configuration Django
-
-Les variables locales sont definies dans `.env` :
-
-```env
-DJANGO_SECRET_KEY=change-me-in-dev
-DJANGO_DEBUG=True
-DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
-```
-
-Ne publiez jamais votre vrai fichier `.env`.
-
 ## Artefacts generes
 
 Ces dossiers/fichiers sont crees pendant l'utilisation et ne doivent pas etre
