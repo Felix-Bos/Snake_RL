@@ -13,6 +13,8 @@ Le projet propose deux manieres de l'utiliser :
 
 ![Snake RL Dashboard demo](docs/demo.gif)
 
+[Voir la video complete](docs/video.mov)
+
 ## Fonctionnalites
 
 - Environnement Snake custom compatible Gymnasium.
