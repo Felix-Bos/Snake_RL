@@ -11,7 +11,9 @@ Le projet propose deux manieres de l'utiliser :
 
 ## Demo
 
-<video src="docs/video.mov" controls width="100%"></video>
+![Snake RL Dashboard demo](docs/demo.gif)
+
+[Voir la video complete](docs/video.mov)
 
 ## Fonctionnalites
 
