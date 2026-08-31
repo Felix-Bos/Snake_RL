@@ -9,6 +9,10 @@ Le projet propose deux manieres de l'utiliser :
 - un dashboard Django/Channels pour lancer un entrainement depuis le navigateur
   et suivre le snake, les rewards et la loss en temps reel.
 
+## Demo
+
+![Snake RL Dashboard demo](docs/demo.gif)
+
 ## Fonctionnalites
 
 - Environnement Snake custom compatible Gymnasium.
