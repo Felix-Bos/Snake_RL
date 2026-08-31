@@ -11,7 +11,13 @@ Le projet propose deux manieres de l'utiliser :
 
 ## Demo
 
-![Snake RL Dashboard demo](docs/demo.gif)
+### Entrainement
+
+![Snake RL training demo](docs/demo-training.gif)
+
+### Resultat
+
+![Snake RL result demo](docs/demo-results.gif)
 
 [Voir la video complete](docs/video.mov)
 
